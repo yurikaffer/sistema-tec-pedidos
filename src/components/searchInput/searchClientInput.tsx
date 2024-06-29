@@ -1,23 +1,8 @@
 import { useClients } from "@/contexts/ClientsContext";
-import { getAllClients } from "@/services/clienteServices";
 import { Autocomplete, AutocompleteItem, CircularProgress } from "@nextui-org/react";
-import { useEffect } from "react";
 
 const SearchClientInput = () => {
-    const {clients, setClients, setClient} = useClients()
-
-    useEffect(() => {
-        fetchClients()
-    }, []);
-
-    async function fetchClients() {
-        try {
-            const clients = await getAllClients();
-            setClients(clients);
-        } catch (error) {
-            console.error('Erro ao buscar clientes:', error);
-        }
-    }
+    const {clients, setClient} = useClients()
 
     const onSelectionChange = (key: React.Key | null) => {
         const client = clients?.find(client => client.id === Number(key));

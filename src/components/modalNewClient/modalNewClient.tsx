@@ -1,17 +1,17 @@
 import { useClients } from '@/contexts/ClientsContext';
-import { createClient, getAllClients } from '@/services/clienteServices';
+import { createClient } from '@/services/clienteServices';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export function ModalNewClient() {
     const [isOpen, setIsOpen] = useState(false);
+
     const { clients, setClients } = useClients();
 
     const [codigo, setCodigo] = useState('')
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
-
     const [endereco, setEndereco] = useState('')
     const [bairro, setBairro] = useState('')
     const [cidade, setCidade] = useState('')
@@ -35,19 +35,6 @@ export function ModalNewClient() {
         setTelefone(0);
         setIsOpen(false);
     }
-
-    useEffect(() => {
-        fetchClients();
-    }, []);
-
-    const fetchClients = async () => {
-        try {
-            const response = await getAllClients();
-            setClients(response);
-        } catch (error) {
-            console.error('Erro ao buscar clientes:', error);
-        }
-    };
 
     const handleAddClient = async () => {
         try {
@@ -81,7 +68,7 @@ export function ModalNewClient() {
                     + Novo Cliente
                 </Button>
             </div>
-            
+
             <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={setIsOpen} size='5xl'>  {/* TA CERTO ESSE onOpenChange={setIsOpen}?*/}
                 <ModalContent>
                     <ModalHeader className="flex self-center font-bold text-[34px] pt-10 text-gray-800 dark:text-gray-200">
@@ -162,7 +149,6 @@ export function ModalNewClient() {
                                 onChange={(e) => setTelefone(Number(e.target.value))}
                             />
                         </div>
-
                         <Button color='primary' onClick={handleAddClient}>Adicionar Cliente</Button>
                     </ModalBody>
                     <ModalFooter />

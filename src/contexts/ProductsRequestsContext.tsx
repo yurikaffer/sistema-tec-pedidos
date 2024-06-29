@@ -1,18 +1,18 @@
-import { CreateProductRequestDto } from '@/dto/productRequestDto';
+import { CreateProductRequestContextDto } from '@/dto/productRequestDto';
 import React, { ReactNode, createContext, useContext, useState } from 'react';
 
 interface ProductsRequestsContextType {
-  productsRequests: CreateProductRequestDto[];
-  productRequest: CreateProductRequestDto | undefined;
-  setProductsRequests: React.Dispatch<React.SetStateAction<CreateProductRequestDto[]>>;
-  setProductRequest: React.Dispatch<React.SetStateAction<CreateProductRequestDto | undefined>>;
+  productsRequests: CreateProductRequestContextDto[];
+  productRequest: CreateProductRequestContextDto | undefined;
+  setProductsRequests: React.Dispatch<React.SetStateAction<CreateProductRequestContextDto[]>>;
+  setProductRequest: React.Dispatch<React.SetStateAction<CreateProductRequestContextDto | undefined>>;
 }
 
 const ProductsRequestsContext = createContext<ProductsRequestsContextType | undefined>(undefined);
 
 export const ProductsRequestsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [productsRequests, setProductsRequests] = useState<CreateProductRequestDto[]>([]);
-  const [productRequest, setProductRequest] = useState<CreateProductRequestDto>();
+  const [productsRequests, setProductsRequests] = useState<CreateProductRequestContextDto[]>([]);
+  const [productRequest, setProductRequest] = useState<CreateProductRequestContextDto>();
 
   return (
     <ProductsRequestsContext.Provider value={{ productsRequests, setProductsRequests, productRequest, setProductRequest }}>

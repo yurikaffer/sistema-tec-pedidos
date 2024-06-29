@@ -19,3 +19,10 @@ export interface CreateProductRequestDto {
     unidade: number;
     total: number; 
 }
+
+export interface CreateProductRequestContextDto {
+    quantidade: number;
+    produto?: ProductDto;
+    unidade: number;
+    total: number; 
+}
