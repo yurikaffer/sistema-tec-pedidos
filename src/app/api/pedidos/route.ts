@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
             });
         }
 
-        const response = await getPaginationData({page, limit})
+        const response = await getPaginationData({ page, limit })
 
         return new NextResponse(JSON.stringify(response), {
             status: 200,
@@ -30,27 +30,27 @@ export async function GET(req: NextRequest) {
     }
 }
 
-//export async function POST(req: NextRequest) {
-//    try {
-//        const body = await req.json();
-//        const { clienteId, data, produtos, cliente } = body;
-//
-//        const pedidos = await prisma.pedido.create({
-//            data: { clienteId, data, produtos, cliente }
-//        })
-//
-//        return new NextResponse(JSON.stringify(pedidos), { status: 201, headers: { 'Content-Type': 'application/json' } });
-//    } catch (error) {
-//        return NextResponse.json({ error: 'Erro no processamento da solicitação' }, { status: 500 });
-//    }
-//}
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const { codigo, data, clienteId, total } = body;
+
+        const pedido = await prisma.pedido.create({
+            data: { codigo, data, clienteId, total }
+        })
+
+        return new NextResponse(JSON.stringify(pedido), { status: 201, headers: { 'Content-Type': 'application/json' } });
+    } catch (error) {
+        return NextResponse.json({ error: 'Erro no processamento da solicitação' }, { status: 500 });
+    }
+}
 
 interface PaginationDataProps {
     page: number
     limit: number
 }
 
-async function getPaginationData({limit, page}: PaginationDataProps) {
+async function getPaginationData({ limit, page }: PaginationDataProps) {
     const total = await prisma.pedido.count();
     const pedidos = await prisma.pedido.findMany({
         skip: (page - 1) * limit,

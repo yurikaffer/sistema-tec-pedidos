@@ -7,7 +7,7 @@ export const getAllRequests = async (): Promise<RequestDto[]> => {
     return res.data as RequestDto[];
 }
 
-export const createRequests = async (data: CreateRequestDto): Promise<CreateRequestDto> => {
+export const createRequests = async (data: CreateRequestDto): Promise<RequestDto> => {
     const res = await axios.post('/api/pedidos', data);
     return res.data;
 };

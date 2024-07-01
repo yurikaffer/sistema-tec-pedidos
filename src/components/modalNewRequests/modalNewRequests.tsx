@@ -3,7 +3,9 @@ import { useProdutos } from "@/contexts/ProductsContext";
 import { useProductsRequests } from "@/contexts/ProductsRequestsContext";
 import { CreateProductRequestContextDto } from "@/dto/productRequestDto";
 import { getAllClients } from "@/services/clienteServices";
+import { createProductRequest } from "@/services/productRequestService";
 import { getAllProducts } from "@/services/produtoServices";
+import { createRequests } from "@/services/requestsService";
 import { DateValue } from "@internationalized/date";
 import { Autocomplete, AutocompleteItem, Button, CircularProgress, DateInput, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
@@ -14,6 +16,7 @@ export function ModalNewRequests() {
     const [isOpen, setIsOpen] = useState(false);
     const [codigo, setCodigo] = useState('')
     const [date, setDate] = useState<DateValue>()
+    const [total, setTotal] = useState(0)
     const { setClients, setClient, client } = useClients()
     const { setProductsRequests, productsRequests } = useProductsRequests()
 
@@ -25,23 +28,62 @@ export function ModalNewRequests() {
     }
 
     useEffect(() => {
+        async function fetchClients() {
+            try {
+                const clients = await getAllClients();
+                setClients(clients);
+            } catch (error) {
+                console.error('Erro ao buscar clientes:', error);
+            }
+        }
+
         fetchClients()
     }, []);
 
-    async function fetchClients() {
-        try {
-            const clients = await getAllClients();
-            setClients(clients);
-        } catch (error) {
-            console.error('Erro ao buscar clientes:', error);
-        }
-    }
+    useEffect(() => {
+        console.log('total: ', total)
+    }, [total]);
+
+    useEffect(() => {
+        productsRequests.map(request => setTotal(request.total + total))
+    }, [productsRequests]);
+
+    function dateValueToDate(dateValue: DateValue): Date {
+        const { year, month, day } = dateValue;
+        return new Date(year, month - 1, day);
+      }
 
     const handleAddRequests = async () => {
+        if(date && client?.id) {
+            const newRequest = {
+                codigo: codigo,
+                data: dateValueToDate(date),
+                clienteId: client?.id,
+                total: total
+            }
+
+            const request = await createRequests(newRequest)
+
+            productsRequests.map(async (productReq) => {
+                if (productReq.produto?.id) {
+                    const newRequestProduct = {
+                        pedidoId: request.id,
+                        quantidade: productReq.quantidade,
+                        produtoId: productReq.produto?.id,
+                        unidade: productReq.unidade,
+                        total: productReq.total
+                    }
+    
+                    await createProductRequest(newRequestProduct)
+                    onOpen()
+                }
+            })
+        }
+        
         try {
         } catch (error) {
             console.error('Erro ao adicionar pedido:', error);
-        }
+        } 
     };
 
     const onOpen = () => {

@@ -4,8 +4,8 @@ import { Bag, House, IdentificationCard, Note, SquaresFour } from "@phosphor-ico
 
 export default function Nav() {
   return (
-    <div className="flex flex-col gap-2 pt-[3rem] px-10 h-full ">
-      <img src="/tec-logo-cut.webp" alt="logo empresa" className="mb-[3rem] w-full h-[80px]" />
+    <div className="flex flex-col gap-2 pt-10 pl-10 h-full ">
+      {/*<img src="/tec-logo-cut.webp" alt="logo empresa" className="mb-[3rem] w-full h-[80px]" >*/}
       <Link className="shadow-medium flex gap-2 bg-white text-gray-800 p-2  rounded-xl" href="/">
         <House className="ml-2" size={28} />
         Home

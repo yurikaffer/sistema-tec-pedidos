@@ -23,6 +23,14 @@ export default function RequestsList() {
 
   const loadingState = isLoading || !data?.pedidos ? 'loading' : 'idle';
 
+  function formatDateToDDMMYYYY(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
   if (error) return <div>Erro ao carregar dados</div>;
 
   return (
@@ -57,9 +65,9 @@ export default function RequestsList() {
       >
         {(item: RequestDto) => (
           <TableRow key={item.id}>
-            <TableCell>Teste</TableCell>
-            <TableCell>Teste</TableCell>
-            <TableCell>Teste</TableCell>
+            <TableCell>{item.codigo}</TableCell>
+            <TableCell>{String(item.data)}</TableCell>
+            <TableCell>{String(item.cliente)}</TableCell>
           </TableRow>
         )}
       </TableBody>
@@ -72,7 +80,6 @@ function TitleTable() {
     <div className='flex flex-col gap-4'>
       <h1 className='text-[28px] font-semibold'>Pedidos Cadastrados</h1>
       <div className='flex justify-between items-center'>
-
         <ModalNewRequests />
       </div>
     </div>

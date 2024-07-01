@@ -4,7 +4,7 @@ import { ProductRequestDto } from "./productRequestDto";
 export interface RequestDto {
     id: number;
     codigo: string;
-    dataEmissao: Date;
+    data: Date;
     cliente: ClientDto; 
     produtos: ProductRequestDto[];
     total: number
@@ -14,7 +14,7 @@ export interface RequestDto {
 
 export interface CreateRequestDto {
     codigo: string;
-    dataEmissao: Date;
-    cliente: ClientDto; 
-    produtos: ProductRequestDto[];
+    data: Date;
+    clienteId: number; 
+    total: number;
 }

@@ -13,9 +13,9 @@ export interface ProductRequestDto {
 }
 
 export interface CreateProductRequestDto {
-    pedido?: RequestDto;
+    pedidoId: number;
     quantidade: number;
-    produto?: ProductDto;
+    produtoId: number;
     unidade: number;
     total: number; 
 }
