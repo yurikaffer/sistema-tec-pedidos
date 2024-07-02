@@ -1,5 +1,5 @@
 'use client'
-import ProductsList from '@/components/productsList/ProductsList';
+import ProductsList from "@/components/specifics/productsList"
 
 export default function Produtos() {
     return (

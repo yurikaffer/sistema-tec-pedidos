@@ -1,34 +1,23 @@
 
-import { Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react';
-import { useMemo, useState } from 'react';
-import useSWR from 'swr';
-
 import { ClientDto } from '@/dto/clientDto';
-import { ModalNewClient } from '../modalNewClient/modalNewClient';
-import SearchInput from '../searchInput/searchClientInput';
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import usePaginatedApi from '@/services/usePaginatedApi';
+import { Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react';
+import { useState } from 'react';
+import { ModalNewClient } from './modalNewClient';
 
 export default function ClientList() {
   const [page, setPage] = useState(1);
   const limit = 10;
+  const endpoint = '/clientes'
 
-  const { data, error, isLoading } = useSWR(`/api/clientes?page=${page}&limit=${limit}`, fetcher, {
-    keepPreviousData: true,
-  });
-
-  const rowsPerPage = limit;
-  const pages = useMemo(() => {
-    return data?.total ? Math.ceil(data.total / rowsPerPage) : 0;
-  }, [data?.total, rowsPerPage]);
-
-  const loadingState = isLoading || !data?.clientes ? 'loading' : 'idle';
+  const { data, error, pages, loadingState } = usePaginatedApi({page, limit, endpoint});
 
   if (error) return <div>Erro ao carregar dados</div>;
 
   return (
     <Table
       aria-label="Clientes cadastrados"
+      selectionMode="single" 
       topContent={<TitleTable />}
       bottomContent={
         pages > 0 ? (
@@ -62,7 +51,7 @@ export default function ClientList() {
       <TableBody
         items={data?.clientes ?? []}
         loadingContent={<Spinner className='mt-[10rem]' />}
-        loadingState={loadingState}
+        loadingState={loadingState as any}
       >
         {(item: ClientDto) => (
           <TableRow key={item.id}>
@@ -89,7 +78,6 @@ function TitleTable() {
     <div className='flex flex-col gap-4'>
       <h1 className='text-[28px] font-semibold'>Clientes Cadastrados</h1>
       <div className='flex justify-between items-center'>
-        <SearchInput />
         <ModalNewClient />
       </div>
     </div>

@@ -1,11 +1,17 @@
+import { ProductDto } from '@/dto/productDto';
 import { createProduct, getAllProducts } from '@/services/produtoServices';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
-import { Produto } from '@prisma/client';
+
 import { useEffect, useState } from 'react';
+
+//REFATORAR ESSE COMPONENTE
+//REFATORAR ESSE COMPONENTE
+//REFATORAR ESSE COMPONENTE
+//REFATORAR ESSE COMPONENTE
 
 export function ModalNewProduct() {
     const [isOpen, setIsOpen] = useState(false);
-    const [products, setProducts] = useState<Produto[]>([])
+    const [products, setProducts] = useState<ProductDto[]>([])
     const [codigo, setCodigo] = useState('')
     const [descriminacao, setDescriminacao] = useState('')
     const [medida, setMedida] = useState('')

@@ -1,79 +1,13 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
-
-  try {
-    if (!page && !limit) {
-      const response = await prisma.cliente.findMany()
-
-      return new NextResponse(JSON.stringify(response), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const response = await getPaginationData({ page, limit })
-
-    return new NextResponse(JSON.stringify(response), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Erro ao buscar clientes' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const {
-      codigo,
-      nome,
-      email,
-      inscricaoEstadual,
-      endereco,
-      bairro,
-      cidade,
-      uf,
-      cep,
-      cnpjOuCPF,
-      telefone,
-    } = body;
-
-    const cliente = await prisma.cliente.create({
-      data: {
-        codigo,
-        nome,
-        email,
-        inscricaoEstadual,
-        endereco,
-        bairro,
-        cidade,
-        uf,
-        cep,
-        cnpjOuCPF,
-        telefone,
-      }
-    })
-
-    return new NextResponse(JSON.stringify(cliente), { status: 201, headers: { 'Content-Type': 'application/json' } });
-  } catch (error) {
-    console.log(error)
-    return NextResponse.json({ error: 'Erro no processamento da solicitação' }, { status: 500 });
-  }
-}
-
 interface PaginationDataProps {
-  page: number
-  limit: number
+  page: number;
+  limit: number;
 }
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
 
 async function getPaginationData({ limit, page }: PaginationDataProps) {
   const total = await prisma.cliente.count();
@@ -82,12 +16,64 @@ async function getPaginationData({ limit, page }: PaginationDataProps) {
     take: limit,
   });
 
-  const response = {
-    clientes,
-    total,
-    page,
-    limit,
-  };
+  return { clientes, total, page, limit };
+}
 
-  return response
+function createErrorResponse(message: string, status = 500) {
+  return new NextResponse(
+    JSON.stringify({ error: message }),
+    { status, headers: { 'Content-Type': 'application/json' } }
+  );
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get('page') || `${DEFAULT_PAGE}`, 10);
+  const limit = parseInt(searchParams.get('limit') || `${DEFAULT_LIMIT}`, 10);
+
+  try {
+    if (isNaN(page) || isNaN(limit)) {
+      const response = await prisma.cliente.findMany();
+      return new NextResponse(JSON.stringify(response), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const response = await getPaginationData({ page, limit });
+    return new NextResponse(JSON.stringify(response), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    return createErrorResponse('Erro ao buscar clientes');
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const newClient = {
+      codigo: body.codigo,
+      nome: body.nome,
+      email: body.email,
+      inscricaoEstadual: Number(body.inscricaoEstadual),
+      endereco: body.endereco,
+      bairro: body.bairro,
+      cidade: body.cidade,
+      uf: body.uf,
+      cep: Number(body.cep),
+      cnpjOuCPF: Number(body.cnpjOuCPF),
+      telefone: Number(body.telefone),
+    };
+
+    const cliente = await prisma.cliente.create({ data: newClient });
+    return new NextResponse(JSON.stringify(cliente), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error(error);
+    return createErrorResponse('Erro no processamento da solicitação');
+  }
 }

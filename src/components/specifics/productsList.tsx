@@ -1,33 +1,23 @@
 import { ProductDto } from '@/dto/productDto';
+import usePaginatedApi from '@/services/usePaginatedApi';
 import { Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react';
-import { useMemo, useState } from 'react';
-import useSWR from 'swr';
-import { ModalNewProduct } from '../modalNewProduct/modalNewProduct';
-import SearchInput from '../searchInput/searchClientInput';
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { useState } from 'react';
+import { ModalNewProduct } from './modalNewProduct';
 
 export default function ProductsList() {
   const [page, setPage] = useState(1);
   const limit = 10;
+  const endpoint = '/produtos'
 
-  const { data, error, isLoading } = useSWR(`/api/produtos?page=${page}&limit=${limit}`, fetcher, {
-    keepPreviousData: true,
-  });
-
-  const rowsPerPage = limit;
-  const pages = useMemo(() => {
-    return data?.total ? Math.ceil(data.total / rowsPerPage) : 0;
-  }, [data?.total, rowsPerPage]);
-
-  const loadingState = isLoading || !data?.produtos ? 'loading' : 'idle';
+  const { data, error, pages, loadingState } = usePaginatedApi({page, limit, endpoint});
 
   if (error) return <div>Erro ao carregar dados</div>;
 
   return (
       <Table
         aria-label="Produtos cadastrados"
-        topContent={<TitleTable />}
+        selectionMode="single" 
+        topContent={<HeaderTable />}
         bottomContent={
           pages > 0 ? (
             <div className="flex w-full justify-center">
@@ -52,7 +42,7 @@ export default function ProductsList() {
         <TableBody
           items={data?.produtos ?? []}
           loadingContent={<Spinner className='mt-[10rem]' />}
-          loadingState={loadingState}
+          loadingState={loadingState as any}
         >
           {(item: ProductDto) => (
             <TableRow key={item.id}>
@@ -66,14 +56,14 @@ export default function ProductsList() {
   );
 }
 
-function TitleTable() {
+function HeaderTable() {
   return (
     <div className='flex flex-col gap-4'>
       <h1 className='text-[28px] font-semibold'>Produtos Cadastrados</h1>
       <div className='flex justify-between items-center'>
-        <SearchInput />
         <ModalNewProduct />
       </div>
     </div>
   )
 }
+

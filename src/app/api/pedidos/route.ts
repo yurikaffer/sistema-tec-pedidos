@@ -8,7 +8,12 @@ export async function GET(req: NextRequest) {
 
     try {
         if (!page && !limit) {
-            const response = await prisma.pedido.findMany()
+            const response = await prisma.pedido.findMany({
+                include: {
+                    cliente: true,
+                    produtos: true
+                },
+            })
 
             return new NextResponse(JSON.stringify(response), {
                 status: 200,
@@ -55,6 +60,10 @@ async function getPaginationData({ limit, page }: PaginationDataProps) {
     const pedidos = await prisma.pedido.findMany({
         skip: (page - 1) * limit,
         take: limit,
+        include: {
+            cliente: true,
+            produtos: true,
+        },
     });
 
     const response = {
