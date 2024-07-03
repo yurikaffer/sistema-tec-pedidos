@@ -62,7 +62,11 @@ async function getPaginationData({ limit, page }: PaginationDataProps) {
         take: limit,
         include: {
             cliente: true,
-            produtos: true,
+            produtos: {
+                include: {
+                  produto: true, // Inclui os dados completos do produto
+                },
+              },
         },
     });
 

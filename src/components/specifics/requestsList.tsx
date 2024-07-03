@@ -15,6 +15,7 @@ import {
 } from '@nextui-org/react';
 import { DotsThreeVertical } from "@phosphor-icons/react";
 import { useEffect, useState } from 'react';
+import Report from "../report/report";
 import SearchClientInput from "../ui/searchClientInput";
 import { ModalNewClient } from "./modalNewClient";
 import ProductsRequestTable from "./productsRequestTable";
@@ -24,14 +25,14 @@ export default function RequestsList() {
   const limit = 10;
   const endpoint = '/pedidos'
 
-  const { data, error, pages, loadingState } = usePaginatedApi({page, limit, endpoint});
+  const { data, error, pages, loadingState } = usePaginatedApi({ page, limit, endpoint });
 
   if (error) return <div>Erro ao carregar dados</div>;
 
   return (
     <Table
       aria-label="Pedidos cadastrados"
-      selectionMode="single" 
+      selectionMode="single"
       topContent={<HeaderTable />}
       bottomContent={
         pages > 0 && (
@@ -65,7 +66,7 @@ export default function RequestsList() {
             <TableCell>{item.codigo}</TableCell>
             <TableCell>{formatDate(String(item.data))}</TableCell>
             <TableCell>{item.cliente.nome}</TableCell>
-            <TableCell><Actions item={item}/></TableCell>
+            <TableCell><Actions requestSelected={item} /></TableCell>
           </TableRow>
         )}
       </TableBody>
@@ -198,13 +199,15 @@ function HeaderTable() {
   );
 }
 
-function Actions({item}:{item: RequestDto}) {
+function Actions({ requestSelected }: { requestSelected: RequestDto }) {
+  const [isOpen, setIsOpen] = useState(false);
 
-  function generatePDF() {
-    console.log('item: ', item)
-  }
-  
+  const onOpen = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
+    <>
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly size="sm" variant="light">
@@ -215,8 +218,51 @@ function Actions({item}:{item: RequestDto}) {
           <DropdownItem>Detalhes</DropdownItem>
           <DropdownItem>Editar</DropdownItem>
           <DropdownItem>Remover</DropdownItem>
-          <DropdownItem onPress={generatePDF}>Imprimir</DropdownItem>
+          <DropdownItem onPress={onOpen}>Gerar PDF</DropdownItem>
         </DropdownMenu>
       </Dropdown>
+
+      <ModalPrintPDF isOpen={isOpen} onOpen={onOpen} request={requestSelected} />
+    </>
   );
+}
+
+interface ModalPrintPDFProps {
+  isOpen: boolean
+  onOpen: () => void
+  request: RequestDto
+}
+
+import generatePDF, { Margin } from 'react-to-pdf';
+
+function ModalPrintPDF({ isOpen, onOpen, request }: ModalPrintPDFProps) {
+  const getTargetElement = () => document.getElementById('report')
+
+  const handleGeneratePDF = async () => {
+    generatePDF(getTargetElement, {
+      method: 'open',
+      page: {
+        margin: Margin.MEDIUM,
+        format: 'A4',
+        orientation: 'portrait',
+      },
+    })
+  }
+
+  return (
+    <Modal className="bg-white" backdrop="blur" isOpen={isOpen} onOpenChange={onOpen} size="5xl">
+      <ModalContent>
+        <ModalBody className="p-10">
+          <div id="report">
+            <Report request={request} />
+          </div>
+        </ModalBody>
+        <ModalFooter className="pr-10 pb-10">
+          <Button onPress={handleGeneratePDF} color="primary" className="mt-[1rem]">
+            Download
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
 }
