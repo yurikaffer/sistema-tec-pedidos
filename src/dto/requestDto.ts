@@ -7,7 +7,8 @@ export interface RequestDto {
     data: Date;
     cliente: ClientDto; 
     produtos: ProductRequestDto[];
-    total: number
+    total: number;
+    pago: string;
     created_at: Date;
     updated_at: Date;
 }
@@ -17,4 +18,5 @@ export interface CreateRequestDto {
     data: Date;
     clienteId: number; 
     total: number;
+    pago: string;
 }

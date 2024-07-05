@@ -36,10 +36,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { codigo, descriminacao, medida } = body;
 
-    //if (!nome || !peso_un || !preco_un) {
-    //  return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
-    //}
+    const produtoExistente = await prisma.produto.findFirst({
+      where: { codigo }
+    })
 
+    if (produtoExistente) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Produto já cadastrado' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const produto = await prisma.produto.create({
       data: { codigo, descriminacao, medida }
     })

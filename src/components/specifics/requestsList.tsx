@@ -79,6 +79,7 @@ function HeaderTable() {
   const [codigo, setCodigo] = useState('');
   const [date, setDate] = useState<DateValue>();
   const [total, setTotal] = useState(0);
+  const [pago, setPago] = useState('');
   const { setClients, setClient, client } = useClients();
   const { setProductsRequests, productsRequests } = useProductsRequests();
 
@@ -113,6 +114,7 @@ function HeaderTable() {
         data: dateValueToDate(date),
         clienteId: client.id,
         total,
+        pago
       };
 
       const request = await createRequests(newRequest);
@@ -187,6 +189,13 @@ function HeaderTable() {
                 <ModalNewClient />
               </div>
               <ProductsRequestTable />
+              <Input
+                  type="number"
+                  label="Pago R$"
+                  value={(pago)}
+                  className="w-[15ch]"
+                  onChange={(e) => setPago(e.target.value)}
+                />
               <Button color="primary" onClick={handleAddRequests}>
                 Adicionar Pedido
               </Button>
