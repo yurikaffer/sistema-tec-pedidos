@@ -11,15 +11,15 @@ model Cliente {
   id                 Int       @id @default(autoincrement())
   codigo             String    @unique
   nome               String
-  email              String?
-  inscricaoEstadual  Int?
-  endereco           String?
-  bairro             String?
-  cidade             String?
-  uf                 String?
-  cep                Int?
-  cnpjOuCPF          Int
-  telefone           Int?
+  email              String
+  inscricaoEstadual  String
+  endereco           String
+  bairro             String
+  cidade             String
+  uf                 String
+  cep                String
+  cnpjOuCPF          String
+  telefone           String
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   pedidos            Pedido[]

@@ -57,14 +57,14 @@ export async function POST(req: NextRequest) {
       codigo: body.codigo,
       nome: body.nome,
       email: body.email,
-      inscricaoEstadual: Number(body.inscricaoEstadual),
+      inscricaoEstadual: body.inscricaoEstadual,
       endereco: body.endereco,
       bairro: body.bairro,
       cidade: body.cidade,
       uf: body.uf,
-      cep: Number(body.cep),
-      cnpjOuCPF: Number(body.cnpjOuCPF),
-      telefone: Number(body.telefone),
+      cep: body.cep,
+      cnpjOuCPF: body.cnpjOuCPF,
+      telefone: body.telefone,
     };
 
     const cliente = await prisma.cliente.create({ data: newClient });

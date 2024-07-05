@@ -3,15 +3,15 @@ CREATE TABLE "Cliente" (
     "id" SERIAL NOT NULL,
     "codigo" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
-    "email" TEXT,
-    "inscricaoEstadual" TEXT,
-    "endereco" TEXT,
-    "bairro" TEXT,
-    "cidade" TEXT,
-    "uf" TEXT,
-    "cep" TEXT,
+    "email" TEXT NOT NULL,
+    "inscricaoEstadual" TEXT NOT NULL,
+    "endereco" TEXT NOT NULL,
+    "bairro" TEXT NOT NULL,
+    "cidade" TEXT NOT NULL,
+    "uf" TEXT NOT NULL,
+    "cep" TEXT NOT NULL,
     "cnpjOuCPF" TEXT NOT NULL,
-    "telefone" TEXT,
+    "telefone" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -33,6 +33,7 @@ CREATE TABLE "Produto" (
 -- CreateTable
 CREATE TABLE "Pedido" (
     "id" SERIAL NOT NULL,
+    "codigo" TEXT NOT NULL,
     "data" TIMESTAMP(3) NOT NULL,
     "clienteId" INTEGER NOT NULL,
     "total" DOUBLE PRECISION NOT NULL,
@@ -61,6 +62,9 @@ CREATE UNIQUE INDEX "Cliente_codigo_key" ON "Cliente"("codigo");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Produto_codigo_key" ON "Produto"("codigo");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Pedido_codigo_key" ON "Pedido"("codigo");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ProdutoPedido_pedidoId_produtoId_key" ON "ProdutoPedido"("pedidoId", "produtoId");

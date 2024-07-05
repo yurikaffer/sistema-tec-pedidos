@@ -3,14 +3,14 @@ export interface ClientDto {
     codigo: string;
     nome: string;
     email: string;
-    inscricaoEstadual: number;
+    inscricaoEstadual: string;
     endereco: string;
     bairro: string;
     cidade: string;
     uf: string;
-    cep: number;
-    cnpjOuCPF: number;
-    telefone: number;
+    cep: string;
+    cnpjOuCPF: string;
+    telefone: string;
     created_at: Date;
     updated_at: Date;
 }
@@ -19,13 +19,13 @@ export interface CreateClientDto {
     codigo: string;
     nome: string;
     email: string;
-    inscricaoEstadual: number;
+    inscricaoEstadual: string;
     endereco: string;
     bairro: string;
     cidade: string;
     uf: string;
-    cep: number;
-    cnpjOuCPF: number;
-    telefone: number;
+    cep: string;
+    cnpjOuCPF: string;
+    telefone: string;
 }
 
