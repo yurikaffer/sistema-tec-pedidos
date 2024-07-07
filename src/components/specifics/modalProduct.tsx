@@ -1,3 +1,4 @@
+import { useProdutos } from '@/contexts/ProductsContext';
 import { ProductDto } from '@/dto/productDto';
 import { createProduct, updateProduct } from '@/services/produtoServices';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,10 +19,10 @@ interface ModalProductProps {
     product?: ProductDto;
     isOpen: boolean;
     onClose: () => void;
-    onProductSaved: (savedProduct: ProductDto) => void;
 }
 
-export function ModalProduct({ product, isOpen, onClose, onProductSaved }: ModalProductProps) {
+export function ModalProduct({ product, isOpen, onClose }: ModalProductProps) {
+    const { produtos, setProdutos } = useProdutos();
     const {
         register,
         handleSubmit,
@@ -46,14 +47,15 @@ export function ModalProduct({ product, isOpen, onClose, onProductSaved }: Modal
 
     const onSubmit = async (data: FormSchema) => {
         try {
-            const savedProduct = product
-                ? await updateProduct(product.id, data)
-                : await createProduct(data);
+            if (product) {
+                const updatedProduct = await updateProduct(product.id, data);
+                setProdutos(produtos.map(p => p.id === product.id ? updatedProduct : p)); //
+            } else {
+                setProdutos([...produtos, await createProduct(data)]);
+            }
 
-            onProductSaved(savedProduct);
-            onCloseModal
+            onCloseModal();
         } catch (error) {
-            //setError("codigo", { type: "manual", message: error as string });
             console.error('Erro ao salvar produto:', error);
         }
     };
