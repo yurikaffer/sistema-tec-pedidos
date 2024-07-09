@@ -1,13 +1,47 @@
 'use client'
-import ProductsList from "@/components/specifics/productsList"
+import { ModalProduct, ModalProductProps } from "@/components/specifics/modalProduct";
+import GenericList from "@/components/ui/GenericList";
+import { useProdutos } from "@/contexts/ProductsContext";
+
+//export default function Produtos() {
+//    return (
+//        <main className='flex flex-col items-center pt-10'>
+//            <div className='w-full h-full max-w-[95%] '>
+//                <ProductsList />
+//            </div>
+//        </main>
+//    )
+//}
 
 export default function Produtos() {
+    const { produtos, setProdutos } = useProdutos();
+
+    const renderModalComponent = (props: ModalProductProps) => (
+        <ModalProduct {...props} />
+    );
+
+    const columns = [
+        { key: 'codigo', label: 'Código' },
+        { key: 'descriminacao', label: 'Discriminação' },
+        { key: 'medida', label: 'Medidas' },
+        { key: 'actions', label: 'Ações' },
+    ];
+
     return (
         <main className='flex flex-col items-center pt-10'>
             <div className='w-full h-full max-w-[95%] '>
-                <ProductsList />
+
+                <GenericList
+                    dataName="produtos"
+                    endpoint="/produtos"
+                    itemsTitle="Produtos"
+                    itemName="Produto"
+                    items={produtos}
+                    setItens={setProdutos}
+                    columns={columns}
+                    ModalComponent={renderModalComponent}
+                 />
             </div>
         </main>
     )
 }
-

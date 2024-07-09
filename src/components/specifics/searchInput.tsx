@@ -39,8 +39,7 @@ const SearchInput = ({ searchTerm, setSearchTerm, placeholder }: SearchInputProp
                     }
                 }}
                 startContent={<MagnifyingGlass />}
-                className="w-full"
-            />
+                className="w-full rounded-r-full " />
             <Button
                 className='bg-gray-100 hover:bg-gray-300 dark:bg-[#27272A] dark:hover:bg-[#3F3F46] shadow-sm px-10'
                 onClick={handleSearch}

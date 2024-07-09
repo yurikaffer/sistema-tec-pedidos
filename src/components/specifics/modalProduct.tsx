@@ -15,7 +15,7 @@ const productSchema = z.object({
 
 type FormSchema = z.infer<typeof productSchema>;
 
-interface ModalProductProps {
+export interface ModalProductProps {
     product?: ProductDto;
     isOpen: boolean;
     onClose: () => void;
@@ -37,6 +37,7 @@ export function ModalProduct({ product, isOpen, onClose }: ModalProductProps) {
 
     useEffect(() => {
         if (product) {
+            console.log('product', product);
             setValue('codigo', product.codigo);
             setValue('descriminacao', product.descriminacao);
             setValue('medida', product.medida);

@@ -90,7 +90,7 @@ const ProductsTable = ({ page, setPage, totalPages, loadingState }: ProductsTabl
     >
       <TableHeader>
         <TableColumn>Código</TableColumn>
-        <TableColumn>Descriminação</TableColumn>
+        <TableColumn>Discriminação</TableColumn>
         <TableColumn>Medidas</TableColumn>
         <TableColumn>Ações</TableColumn>
       </TableHeader>
@@ -106,7 +106,7 @@ const ProductsTable = ({ page, setPage, totalPages, loadingState }: ProductsTabl
             <TableCell>{item.descriminacao}</TableCell>
             <TableCell>{item.medida}</TableCell>
             <TableCell >
-              <Actions productSelected={item} />
+              <Actions item={item} />
             </TableCell>
           </TableRow>
         )}
@@ -129,16 +129,16 @@ const PaginationControl = ({ page, setPage, totalPages }: PaginationControlProps
   </div>
 );
 
-const Actions = ({ productSelected }: { productSelected: ProductDto }) => {
+const Actions = ({ item }: { item: ProductDto }) => {
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const { setProdutos } = useProdutos();
 
   const handleDelete = async () => {
     try {
-      if (productSelected) {
-        await deleteProduct(productSelected.id);
-        setProdutos(produtos => produtos.filter(product => product.id !== productSelected.id));
+      if (item) {
+        await deleteProduct(item.id);
+        setProdutos(produtos => produtos.filter(product => product.id !== item.id));
       }
     } catch (error) {
       console.error('Erro ao deletar produto:', error);
@@ -149,18 +149,22 @@ const Actions = ({ productSelected }: { productSelected: ProductDto }) => {
   return (
     <>
       <ActionsDropdown onEdit={() => setIsOpenEditModal(true)} onDelete={() => setIsConfirmationOpen(true)} />
-      <ModalProduct
-        product={productSelected}
-        isOpen={isOpenEditModal}
-        onClose={() => setIsOpenEditModal(false)}
-      />
-      <ConfirmationModal
-        isOpen={isConfirmationOpen}
-        onClose={() => setIsConfirmationOpen(false)}
-        onConfirm={handleDelete}
-        message={`Tem certeza que deseja remover o produto ${productSelected.descriminacao}?`}
-        title="Confirmar Remoção"
-      />
+      {isOpenEditModal && 
+        <ModalProduct
+          product={item}
+          isOpen={isOpenEditModal}
+          onClose={() => setIsOpenEditModal(false)}
+        />
+      }
+      {isConfirmationOpen && 
+        <ConfirmationModal
+          isOpen={isConfirmationOpen}
+          onClose={() => setIsConfirmationOpen(false)}
+          onConfirm={handleDelete}
+          message={`Tem certeza que deseja remover o produto ${item.descriminacao}?`}
+          title="Confirmar Remoção"
+        />
+      }
     </>
   );
 };

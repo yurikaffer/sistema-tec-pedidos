@@ -5,6 +5,13 @@ import { Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHea
 import { useState } from 'react';
 import { ModalNewClient } from './modalNewClient';
 
+interface ClientsTableProps {
+  page: number;
+  setPage: (page: number) => void;
+  totalPages: number;
+  loadingState: 'loading' | 'loaded' | 'error';
+}
+
 export default function ClientList() {
   const [page, setPage] = useState(1);
   const limit = 10;
