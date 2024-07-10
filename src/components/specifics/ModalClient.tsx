@@ -86,8 +86,8 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
     return (
         <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onClose} size="5xl">
             <ModalContent>
-                <ModalHeader className="flex self-center font-bold text-[34px] pt-10 text-gray-800 dark:text-gray-200">
-                    Cadastro de Cliente
+            <ModalHeader className="flex justify-center text-2xl font-bold">
+                    {moreDetails ? 'Detalhes do Cliente' : item ? 'Editar Cliente' : 'Cadastro de Cliente'}
                 </ModalHeader>
                 <ModalBody>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
@@ -106,7 +106,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="Nome/Razão Social"
                                 errorMessage={errors.nome?.message}
                                 isInvalid={errors.nome ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('nome')}
                             />
                             <Input
@@ -114,7 +114,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="E-mail"
                                 errorMessage={errors.email?.message}
                                 isInvalid={errors.email ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('email')}
                             />
                             <Input
@@ -122,7 +122,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="Endereço"
                                 errorMessage={errors.endereco?.message}
                                 isInvalid={errors.endereco ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('endereco')}
                             />
                         </div>
@@ -132,7 +132,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="Bairro"
                                 errorMessage={errors.bairro?.message}
                                 isInvalid={errors.bairro ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('bairro')}
                             />
                             <Input
@@ -140,7 +140,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="Cidade"
                                 errorMessage={errors.cidade?.message}
                                 isInvalid={errors.cidade ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('cidade')}
                             />
                             <Input
@@ -148,7 +148,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="UF"
                                 errorMessage={errors.uf?.message}
                                 isInvalid={errors.uf ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('uf')}
                             />
                             <Input
@@ -156,7 +156,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="CEP"
                                 errorMessage={errors.cep?.message}
                                 isInvalid={errors.cep ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('cep')}
                             />
                         </div>
@@ -166,7 +166,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="CNPJ/CPF"
                                 errorMessage={errors.cnpjOuCPF?.message}
                                 isInvalid={errors.cnpjOuCPF ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('cnpjOuCPF')}
                             />
                             <Input
@@ -174,7 +174,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="Inscrição Estadual"
                                 errorMessage={errors.inscricaoEstadual?.message}
                                 isInvalid={errors.inscricaoEstadual ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('inscricaoEstadual')}
                             />
                             <Input
@@ -182,7 +182,7 @@ export function ModalClient({ item, isOpen, onClose, moreDetails }: ModalClientP
                                 label="Telefone"
                                 errorMessage={errors.telefone?.message}
                                 isInvalid={errors.telefone ? true : false}
-                                isDisabled={item || moreDetails ? true : false}
+                                isDisabled={moreDetails ? true : false}
                                 {...register('telefone')}
                             />
                         </div>

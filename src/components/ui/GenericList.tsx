@@ -54,6 +54,10 @@ export default function GenericTable({
         }
     }, [data, dataName]);
 
+    useEffect(() => {
+        console.log('TROCOU data: ', data);
+    }, [items]);
+
     return (
         <div className="space-y-4">
             <HeaderTable
@@ -83,10 +87,10 @@ export default function GenericTable({
                 >
                     {(item: any) => (
                         <TableRow key={item.id}>
-                            {columns.map((column, index) => {
+                            {columns.map((column) => {
                                 if (column.key === 'actions') {
                                     return (
-                                        <TableCell key={index}>
+                                        <TableCell key={column.key}>
                                             <Actions
                                                 item={item}
                                                 ModalComponent={ModalComponent}
@@ -99,7 +103,7 @@ export default function GenericTable({
                                     )
                                 } else {
                                     return (
-                                        <TableCell key={index}>{item[column.key]}</TableCell>
+                                        <TableCell key={column.key}>{item[column.key]}</TableCell>
                                     )
                                 }
                             })}
