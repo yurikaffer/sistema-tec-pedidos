@@ -1,7 +1,8 @@
 'use client'
 import { ModalProduct, ModalProductProps } from "@/components/specifics/modalProduct";
-import GenericList from "@/components/ui/GenericList";
+import GenericTable from "@/components/ui/GenericList";
 import { useProdutos } from "@/contexts/ProductsContext";
+import { deleteProduct } from "@/services/produtoServices";
 
 //export default function Produtos() {
 //    return (
@@ -30,8 +31,7 @@ export default function Produtos() {
     return (
         <main className='flex flex-col items-center pt-10'>
             <div className='w-full h-full max-w-[95%] '>
-
-                <GenericList
+                <GenericTable
                     dataName="produtos"
                     endpoint="/produtos"
                     itemsTitle="Produtos"
@@ -40,6 +40,7 @@ export default function Produtos() {
                     setItens={setProdutos}
                     columns={columns}
                     ModalComponent={renderModalComponent}
+                    deleteItem={deleteProduct}
                  />
             </div>
         </main>

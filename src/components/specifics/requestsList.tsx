@@ -15,9 +15,8 @@ import {
 } from '@nextui-org/react';
 import { DotsThreeVertical } from "@phosphor-icons/react";
 import { useEffect, useState } from 'react';
-import Report from "../report/report";
 import SearchClientInput from "../ui/searchClientInput";
-import { ModalNewClient } from "./modalNewClient";
+import { ModalNewClient } from "./ModalClient";
 import ProductsRequestTable from "./productsRequestTable";
 
 export default function RequestsList() {
@@ -230,48 +229,8 @@ function Actions({ requestSelected }: { requestSelected: RequestDto }) {
           <DropdownItem onPress={onOpen}>Gerar PDF</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-
-      <ModalPrintPDF isOpen={isOpen} onOpen={onOpen} request={requestSelected} />
     </>
   );
 }
 
-interface ModalPrintPDFProps {
-  isOpen: boolean
-  onOpen: () => void
-  request: RequestDto
-}
 
-import generatePDF, { Margin } from 'react-to-pdf';
-
-function ModalPrintPDF({ isOpen, onOpen, request }: ModalPrintPDFProps) {
-  const getTargetElement = () => document.getElementById('report')
-
-  const handleGeneratePDF = async () => {
-    generatePDF(getTargetElement, {
-      method: 'open',
-      page: {
-        margin: Margin.MEDIUM,
-        format: 'A4',
-        orientation: 'portrait',
-      },
-    })
-  }
-
-  return (
-    <Modal className="bg-white" backdrop="blur" isOpen={isOpen} onOpenChange={onOpen} size="5xl">
-      <ModalContent>
-        <ModalBody className="p-10">
-          <div id="report">
-            <Report request={request} />
-          </div>
-        </ModalBody>
-        <ModalFooter className="pr-10 pb-10">
-          <Button onPress={handleGeneratePDF} color="primary" className="mt-[1rem]">
-            Download
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  )
-}

@@ -16,12 +16,13 @@ const productSchema = z.object({
 type FormSchema = z.infer<typeof productSchema>;
 
 export interface ModalProductProps {
-    product?: ProductDto;
+    item?: ProductDto;
     isOpen: boolean;
     onClose: () => void;
+    moreDetails?: boolean;
 }
 
-export function ModalProduct({ product, isOpen, onClose }: ModalProductProps) {
+export function ModalProduct({ item, isOpen, onClose, moreDetails }: ModalProductProps) {
     const { produtos, setProdutos } = useProdutos();
     const {
         register,
@@ -36,21 +37,20 @@ export function ModalProduct({ product, isOpen, onClose }: ModalProductProps) {
     });
 
     useEffect(() => {
-        if (product) {
-            console.log('product', product);
-            setValue('codigo', product.codigo);
-            setValue('descriminacao', product.descriminacao);
-            setValue('medida', product.medida);
+        if (item) {
+            setValue('codigo', item.codigo);
+            setValue('descriminacao', item.descriminacao);
+            setValue('medida', item.medida);
         } else {
             reset();
         }
-    }, [product, reset, setValue]);
+    }, [item, reset, setValue]);
 
     const onSubmit = async (data: FormSchema) => {
         try {
-            if (product) {
-                const updatedProduct = await updateProduct(product.id, data);
-                setProdutos(produtos.map(p => p.id === product.id ? updatedProduct : p)); //
+            if (item) {
+                const updatedProduct = await updateProduct(item.id, data);
+                setProdutos(produtos.map(p => p.id === item.id ? updatedProduct : p)); //
             } else {
                 setProdutos([...produtos, await createProduct(data)]);
             }
@@ -68,45 +68,47 @@ export function ModalProduct({ product, isOpen, onClose }: ModalProductProps) {
     }
 
     return (
-        <>
-            <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onCloseModal}>
-                <ModalContent>
-                    <ModalHeader className="flex justify-center text-2xl font-bold">
-                        {product ? 'Editar Produto' : 'Cadastro de Produto'}
-                    </ModalHeader>
-                    <ModalBody>
-                        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-                            <Input
-                                label="Código"
-                                {...register('codigo')}
-                                errorMessage={errors.codigo?.message}
-                                isInvalid={errors.codigo ? true : false}
-                                isDisabled={product ? true : false}
-                            />
-                            <Input
-                                label="Descriminação"
-                                {...register('descriminacao')}
-                                errorMessage={errors.descriminacao?.message}
-                                isInvalid={errors.descriminacao ? true : false}
-                            />
-                            <Input
-                                label="Medidas"
-                                {...register('medida')}
-                                errorMessage={errors.medida?.message}
-                                isInvalid={errors.medida ? true : false}
-                            />
-                            <div className='flex gap-4 pb-2 justify-end'>
-                                <Button color="danger" variant="light" onPress={onCloseModal}>
-                                    Cancelar
-                                </Button>
+        <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onCloseModal}>
+            <ModalContent>
+                <ModalHeader className="flex justify-center text-2xl font-bold">
+                    {moreDetails ? 'Detalhes do Produto' : item ? 'Editar Produto' : 'Cadastro de Produto'}
+                </ModalHeader>
+                <ModalBody>
+                    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+                        <Input
+                            label="Código"
+                            {...register('codigo')}
+                            errorMessage={errors.codigo?.message}
+                            isInvalid={errors.codigo ? true : false}
+                            isDisabled={item || moreDetails ? true : false}
+                        />
+                        <Input
+                            label="Descriminação"
+                            {...register('descriminacao')}
+                            errorMessage={errors.descriminacao?.message}
+                            isInvalid={errors.descriminacao ? true : false}
+                            isDisabled={moreDetails ? true : false}
+                        />
+                        <Input
+                            label="Medidas"
+                            {...register('medida')}
+                            errorMessage={errors.medida?.message}
+                            isInvalid={errors.medida ? true : false}
+                            isDisabled={moreDetails ? true : false}
+                        />
+                        <div className='flex gap-2 pb-2 justify-end'>
+                            <Button color="danger" variant="light" onPress={onCloseModal}>
+                                Cancelar
+                            </Button>
+                            {!moreDetails &&
                                 <Button color="primary" type="submit">
-                                    {product ? 'Atualizar' : 'Adicionar'} Produto
+                                    {item ? 'Atualizar' : 'Adicionar'} Produto
                                 </Button>
-                            </div>
-                        </form>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </>
+                            }
+                        </div>
+                    </form>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
     );
 }

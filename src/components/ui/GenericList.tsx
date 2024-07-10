@@ -1,9 +1,8 @@
-import { useProdutos } from '@/contexts/ProductsContext';
-import { deleteProduct } from '@/services/produtoServices';
 import usePaginatedApi from '@/services/usePaginatedApi';
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react';
-import { DotsThreeVertical, PencilLine, Trash } from '@phosphor-icons/react';
+import { DotsThreeVertical, FilePdf, ListMagnifyingGlass, PencilLine, Trash } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import ModalGeneratePDF from '../specifics/ModalGeneratePDF';
 import { ConfirmationModal } from '../ui/confirmationModal';
 import HeaderTable from './HeaderTable';
 import PaginationControl from './PaginationControl';
@@ -22,6 +21,8 @@ interface GenericTableProps {
     items: any[];
     columns: ColumProps[];
     itemName: string;
+    deleteItem(id: number): Promise<void>
+    generatePDF?: boolean
 }
 
 export default function GenericTable({
@@ -32,7 +33,9 @@ export default function GenericTable({
     itemsTitle,
     items,
     columns,
-    itemName
+    itemName,
+    deleteItem,
+    generatePDF
 }: GenericTableProps) {
     const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
@@ -73,7 +76,7 @@ export default function GenericTable({
                     ))}
                 </TableHeader>
                 <TableBody
-                    items={items}
+                    items={items} //ENTENDER ISSO AQUI TAMBÉM, QUANDO ITEMS PODE SER NULO
                     loadingContent={<Spinner className='mt-[10rem]' />}
                     loadingState={loadingState as any}
                     emptyContent="Nenhum item encontrado"
@@ -84,7 +87,14 @@ export default function GenericTable({
                                 if (column.key === 'actions') {
                                     return (
                                         <TableCell key={index}>
-                                            <Actions item={item} ModalComponent={ModalComponent} itemsTitle={itemsTitle} />
+                                            <Actions
+                                                item={item}
+                                                ModalComponent={ModalComponent}
+                                                itemName={itemName}
+                                                deleteItem={deleteItem}
+                                                setItens={setItens}
+                                                generatePDF={generatePDF}
+                                            />
                                         </TableCell>
                                     )
                                 } else {
@@ -102,29 +112,65 @@ export default function GenericTable({
     );
 }
 
-const Actions = ({ item, ModalComponent, itemsTitle }: { item: any, ModalComponent: React.ComponentType<any>, itemsTitle: string }) => {
+const Actions = ({
+    item,
+    ModalComponent,
+    itemName,
+    deleteItem,
+    setItens,
+    generatePDF
+}: {
+    item: any,
+    ModalComponent: React.ComponentType<any>,
+    itemName: string,
+    deleteItem(id: number): Promise<void>,
+    setItens: React.Dispatch<React.SetStateAction<any[]>>
+    generatePDF?: boolean
+}) => {
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-    const { setProdutos } = useProdutos();
+    const [isInformationsModal, setIsOpenInformationsModal] = useState(false);
+    const [isGeneratePDFModal, setIsGeneratePDFModal] = useState(false);
 
     const handleDelete = async () => {
         try {
             if (item) {
-                await deleteProduct(item.id);
-                setProdutos(produtos => produtos.filter(product => product.id !== item.id));
+                await deleteItem(item.id);
+                setItens(data => data.filter(data => data.id !== item.id));
             }
         } catch (error) {
-            console.error('Erro ao deletar produto:', error);
+            console.error(`Erro ao deletar o ${itemName.toLocaleLowerCase()}:`, error);
             // Implementar notificação de erro para o usuário
         }
     };
 
     return (
         <>
-            <ActionsDropdown onEdit={() => setIsOpenEditModal(true)} onDelete={() => setIsConfirmationOpen(true)} />
+            <ActionsDropdown
+                onEdit={() => setIsOpenEditModal(true)}
+                onDelete={() => setIsConfirmationOpen(true)}
+                onInformations={() => setIsOpenInformationsModal(true)}
+                onGeneratePDF={() => setIsGeneratePDFModal(true)}
+                generatePDF={generatePDF}
+            />
+            {isGeneratePDFModal &&
+                <ModalGeneratePDF
+                    request={item}
+                    isOpen={isGeneratePDFModal}
+                    onClose={() => setIsGeneratePDFModal(false)}
+                />
+            }
+            {isInformationsModal &&
+                <ModalComponent
+                    item={item}
+                    isOpen={isInformationsModal}
+                    moreDetails={isInformationsModal}
+                    onClose={() => setIsOpenInformationsModal(false)}
+                />
+            }
             {isOpenEditModal &&
                 <ModalComponent
-                    product={item}
+                    item={item}
                     isOpen={isOpenEditModal}
                     onClose={() => setIsOpenEditModal(false)}
                 />
@@ -134,7 +180,7 @@ const Actions = ({ item, ModalComponent, itemsTitle }: { item: any, ModalCompone
                     isOpen={isConfirmationOpen}
                     onClose={() => setIsConfirmationOpen(false)}
                     onConfirm={handleDelete}
-                    message={`Tem certeza que deseja remover o produto ${item.descriminacao}?`}
+                    message={`Tem certeza que deseja remover o ${itemName.toLocaleLowerCase()} ${item.descriminacao}?`}
                     title="Confirmação"
                 />
             }
@@ -142,7 +188,19 @@ const Actions = ({ item, ModalComponent, itemsTitle }: { item: any, ModalCompone
     );
 };
 
-const ActionsDropdown = ({ onEdit, onDelete }: { onEdit: () => void, onDelete: () => void }) => (
+const ActionsDropdown = ({
+    onEdit, 
+    onDelete, 
+    onInformations,
+    onGeneratePDF,
+    generatePDF
+}: {
+    onEdit: () => void, 
+    onDelete: () => void, 
+    onInformations: () => void
+    onGeneratePDF: () => void 
+    generatePDF?: boolean
+}) => (
     <Dropdown>
         <DropdownTrigger>
             <Button isIconOnly size="sm" variant="light">
@@ -150,15 +208,31 @@ const ActionsDropdown = ({ onEdit, onDelete }: { onEdit: () => void, onDelete: (
             </Button>
         </DropdownTrigger>
         <DropdownMenu>
+
+            
+                <DropdownItem onPress={onGeneratePDF} isReadOnly={!generatePDF}>
+                    <div className={`flex gap-1 items-center ${!generatePDF ? 'opacity-50' : ''}`}>
+                        <FilePdf size={20} />
+                        Gerar PDF
+                    </div>
+                </DropdownItem>
+            
+
+            <DropdownItem onPress={onInformations}>
+                <div className='flex gap-1 items-center'>
+                    <ListMagnifyingGlass size={20} />
+                    Informações
+                </div>
+            </DropdownItem>
             <DropdownItem onPress={onEdit}>
                 <div className='flex gap-1 items-center'>
-                    <PencilLine size={15} />
+                    <PencilLine size={20} />
                     Editar
                 </div>
             </DropdownItem>
-            <DropdownItem onPress={onDelete}>
+            <DropdownItem onPress={onDelete} color="danger">
                 <div className='flex gap-1 items-center'>
-                    <Trash size={15} />
+                    <Trash size={20} />
                     Remover
                 </div>
             </DropdownItem>

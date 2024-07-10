@@ -3,7 +3,7 @@ import { ClientDto } from '@/dto/clientDto';
 import usePaginatedApi from '@/services/usePaginatedApi';
 import { Pagination, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react';
 import { useState } from 'react';
-import { ModalNewClient } from './modalNewClient';
+import { ModalNewClient } from './ModalClient';
 
 interface ClientsTableProps {
   page: number;
